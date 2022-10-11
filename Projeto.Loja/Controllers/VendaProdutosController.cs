@@ -44,8 +44,27 @@ namespace Projeto.Loja.Controllers
         }
 
         // GET: VendaProdutos/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            List<Produto> produtos = await _context.Produtos.ToListAsync();
+            List<SelectListItem> item = produtos.ConvertAll(a =>
+            {
+                return new SelectListItem() {
+                    Text = a.Nome.ToString(),
+                    Value = a.Id.ToString(),
+                    Selected = false
+                };
+            });
+            List<Venda> vendas = await _context.Vendas.ToListAsync();
+            List<SelectListItem> itemVenda = produtos.ConvertAll(a => {
+                return new SelectListItem() {
+                    Text = a.Id.ToString(),
+                    Value = a.Id.ToString(),
+                    Selected = false
+                };
+            });
+            ViewBag.produtos = item;
+            ViewBag.vendas = itemVenda;
             return View();
         }
 
@@ -54,15 +73,20 @@ namespace Projeto.Loja.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProdutoId,VendaId,Quantidade,Preco,Id,Ativo,DataCriacao,DataAtualizacao")] VendaProduto vendaProduto)
+        public async Task<IActionResult> Create([Bind("ProdutoId,VendaId,Quantidade,Preco")] VendaProduto vendaProduto)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(vendaProduto);
+            var novoProduto = new VendaProduto {
+                ProdutoId = vendaProduto.ProdutoId,
+                VendaId = vendaProduto.VendaId,
+                Quantidade = vendaProduto.Quantidade,
+                Preco = vendaProduto.Preco,
+            };
+
+            _context.Add(novoProduto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            return View(vendaProduto);
+            
+            return View(novoProduto);
         }
 
         // GET: VendaProdutos/Edit/5

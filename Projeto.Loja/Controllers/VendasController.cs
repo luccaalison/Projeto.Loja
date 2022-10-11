@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Projeto.Loja.Data;
 using Projeto.Loja.Entities;
+using Projeto.Loja.Models;
 
 namespace Projeto.Loja.Controllers
 {
@@ -44,8 +45,7 @@ namespace Projeto.Loja.Controllers
         }
 
         // GET: Vendas/Create
-        public IActionResult Create()
-        {
+        public IActionResult Create() {
             return View();
         }
 
@@ -54,14 +54,21 @@ namespace Projeto.Loja.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VendaTotal,QtdProduto,Id,Ativo,DataCriacao,DataAtualizacao")] Venda venda)
+        public async Task<IActionResult> Create([Bind("VendaTotal,QtdProduto")] VendasCreateModel venda)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(venda);
+
+            // Validações
+
+            var novaVenda = new Venda {
+                VendaTotal = venda.VendaTotal,
+                QtdProduto = venda.QtdProduto,
+
+            };
+
+                _context.Add(novaVenda);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
+            
             return View(venda);
         }
 
