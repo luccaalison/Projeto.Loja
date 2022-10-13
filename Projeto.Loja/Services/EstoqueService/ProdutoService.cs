@@ -74,6 +74,7 @@ namespace Projeto.Loja.Service.EstoqueService
             // atualizar
             produto.Nome = produtoEditar.Nome == produto.Nome ? produto.Nome : produtoEditar.Nome;
             produto.Preco = produtoEditar.Preco == produto.Preco ? produto.Preco : produtoEditar.Preco;
+            produto.QtdeEstoque = produtoEditar.QtdeEstoque == produto.QtdeEstoque ? produto.QtdeEstoque : produtoEditar.QtdeEstoque;
             produto.Descricao = produtoEditar.Descricao == produto.Descricao ? produto.Descricao : produtoEditar.Descricao;
             produto.Categoria = produtoEditar.Categoria == produto.Categoria ? produto.Nome : produtoEditar.Categoria;
 

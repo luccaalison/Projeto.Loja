@@ -8,15 +8,23 @@ using Microsoft.EntityFrameworkCore;
 using Projeto.Loja.Data;
 using Projeto.Loja.Entities;
 using Projeto.Loja.Models;
+using Projeto.Loja.Service.EstoqueService;
+using Projeto.Loja.Services.EstoqueService.Interfaces;
+using Projeto.Loja.Services.VendasService;
+using Projeto.Loja.Services.VendasService.Interfaces;
 
 namespace Projeto.Loja.Controllers
 {
     public class ProdutosController : Controller
     {
         private readonly LojaDbContext _context;
+        private readonly IVendasService _vendasService;
+        private readonly IProdutoService _produtoService;
 
-        public ProdutosController(LojaDbContext context)
+        public ProdutosController(LojaDbContext context, IVendasService vendasService, IProdutoService produtoService)
         {
+            _vendasService = vendasService;
+            _produtoService = produtoService;
             _context = context;
         }
 
@@ -100,36 +108,31 @@ namespace Projeto.Loja.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Nome,Descricao,Categoria,Preco,QtdeEstoque,Id,Ativo,DataCriacao,DataAtualizacao")] Produto produto)
+        public async Task<IActionResult> Edit(int id, [Bind("Nome,Descricao,Categoria,Preco,QtdeEstoque,Id")] ProdutoEditModel produtoEditar)
         {
-            if (id != produto.Id)
-            {
-                return NotFound();
-            }
+            // Validar campos
+            if (string.IsNullOrEmpty(produtoEditar.Nome) || string.IsNullOrEmpty(produtoEditar.Categoria))
+                throw new Exception("Por favor, preencha todos os campos.");
+            if (produtoEditar.Preco <= 0)
+                throw new Exception("Por favor, informe o preço do produto.");
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(produto);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProdutoExists(produto.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
+            // buscar produto
+            var produto = await _context.Produtos.FirstOrDefaultAsync(x => x.Id == produtoEditar.Id);
+            if (produto == null)
+                throw new Exception("O produto informado não foi encontrado.");
+
+            // atualizar
+            produto.Nome = produtoEditar.Nome == produto.Nome ? produto.Nome : produtoEditar.Nome;
+            produto.Preco = produtoEditar.Preco == produto.Preco ? produto.Preco : produtoEditar.Preco;
+            produto.QtdeEstoque = produtoEditar.QtdeEstoque == produto.QtdeEstoque ? produto.QtdeEstoque : produtoEditar.QtdeEstoque;
+            produto.Descricao = produtoEditar.Descricao == produto.Descricao ? produto.Descricao : produtoEditar.Descricao;
+            produto.Categoria = produtoEditar.Categoria == produto.Categoria ? produto.Nome : produtoEditar.Categoria;
+
+            // save changes
+            _context.Produtos.Update(produto);
+            await _context.SaveChangesAsync();
             return View(produto);
         }
-
         // GET: Produtos/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
