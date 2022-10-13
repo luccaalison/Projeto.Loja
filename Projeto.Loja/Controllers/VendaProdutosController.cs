@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Projeto.Loja.Data;
 using Projeto.Loja.Entities;
+using Projeto.Loja.Models;
 
 namespace Projeto.Loja.Controllers
 {
@@ -46,11 +47,21 @@ namespace Projeto.Loja.Controllers
         // GET: VendaProdutos/Create
         public async Task<IActionResult> Create()
         {
+
+           ;
             List<Produto> produtos = await _context.Produtos.ToListAsync();
             List<SelectListItem> item = produtos.ConvertAll(a =>
             {
                 return new SelectListItem() {
                     Text = a.Nome.ToString(),
+                    Value = a.Id.ToString(),
+                    Selected = false
+                };
+            });
+            List<Produto> produtosPreco = await _context.Produtos.ToListAsync();
+            List<SelectListItem> preco = produtos.ConvertAll(a => {
+                return new SelectListItem() {
+                    Text = a.Preco.ToString(),
                     Value = a.Id.ToString(),
                     Selected = false
                 };
@@ -63,6 +74,7 @@ namespace Projeto.Loja.Controllers
                     Selected = false
                 };
             });
+            ViewBag.produtosPreco = preco;
             ViewBag.produtos = item;
             ViewBag.vendas = itemVenda;
             return View();

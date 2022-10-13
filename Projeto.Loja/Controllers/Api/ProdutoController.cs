@@ -18,6 +18,7 @@ namespace Projeto.Loja.Controllers.Api
 
         [HttpPost("cadastrar")]
         public async Task<IActionResult> CadastrarNovoProduto([FromBody] ProdutoCreateModel produtoCadastroDto) {
+            
             try {
                 var resp = await _produtoService.CadastrarNovoProduto(produtoCadastroDto);
                 return Ok(resp);

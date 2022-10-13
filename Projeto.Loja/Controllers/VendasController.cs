@@ -8,36 +8,37 @@ using Microsoft.EntityFrameworkCore;
 using Projeto.Loja.Data;
 using Projeto.Loja.Entities;
 using Projeto.Loja.Models;
+using Projeto.Loja.Services.EstoqueService.Interfaces;
+using Projeto.Loja.Services.VendasService.Interfaces;
 
 namespace Projeto.Loja.Controllers
 {
     public class VendasController : Controller
     {
         private readonly LojaDbContext _context;
+        private readonly IVendasService _vendasService;
+        private readonly IProdutoService _produtoService;
 
-        public VendasController(LojaDbContext context)
-        {
+        public VendasController(LojaDbContext context, IVendasService vendasService, IProdutoService produtoService) {
             _context = context;
+            _vendasService = vendasService;
+            _produtoService = produtoService;
         }
 
         // GET: Vendas
-        public async Task<IActionResult> Index()
-        {
+        public async Task<IActionResult> Index() {
             return View(await _context.Vendas.ToListAsync());
         }
 
         // GET: Vendas/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Vendas == null)
-            {
+        public async Task<IActionResult> Details(int? id) {
+            if (id == null || _context.Vendas == null) {
                 return NotFound();
             }
 
             var venda = await _context.Vendas
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (venda == null)
-            {
+            if (venda == null) {
                 return NotFound();
             }
 
@@ -45,8 +46,10 @@ namespace Projeto.Loja.Controllers
         }
 
         // GET: Vendas/Create
-        public IActionResult Create() {
-            return View();
+        public async Task<IActionResult> Create() {
+            VendasCreateModel venda = new VendasCreateModel();
+            ViewBag.produtos = await _produtoService.ListarProdutos();
+            return View(venda);
         }
 
         // POST: Vendas/Create
@@ -54,35 +57,34 @@ namespace Projeto.Loja.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VendaTotal,QtdProduto")] VendasCreateModel venda)
-        {
-
-            // Validações
-
-            var novaVenda = new Venda {
-                VendaTotal = venda.VendaTotal,
-                QtdProduto = venda.QtdProduto,
-
-            };
-
-                _context.Add(novaVenda);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            
-            return View(venda);
+        public async Task<IActionResult> Create([Bind("VendaTotal,QtdProduto")] VendasCreateModel venda, [FromForm] string itemAdd) {
+            try {
+                venda.items = itemAdd.Split(",")?.Select(Int32.Parse)?.ToList();
+                ViewBag.produtos = await _produtoService.ListarProdutos();
+                ViewBag.ItemsAdd = itemAdd;
+                if (venda.VendaTotal <= 0) {
+                    venda.VendaTotal = await _vendasService.ObtemValorVenda(venda);
+                    return View(venda);
+                }
+                else {
+                    var resp = await _vendasService.CriarVenda(venda);
+                }
+                return Redirect("Index");
+            }
+            catch (Exception ex) {
+                ViewBag.Erro = ex.Message;
+                return View(venda);
+            }
         }
 
         // GET: Vendas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Vendas == null)
-            {
+        public async Task<IActionResult> Edit(int? id) {
+            if (id == null || _context.Vendas == null) {
                 return NotFound();
             }
 
             var venda = await _context.Vendas.FindAsync(id);
-            if (venda == null)
-            {
+            if (venda == null) {
                 return NotFound();
             }
             return View(venda);
@@ -93,28 +95,21 @@ namespace Projeto.Loja.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("VendaTotal,QtdProduto,Id,Ativo,DataCriacao,DataAtualizacao")] Venda venda)
-        {
-            if (id != venda.Id)
-            {
+        public async Task<IActionResult> Edit(int id, [Bind("VendaTotal,QtdProduto,Id,Ativo,DataCriacao,DataAtualizacao")] Venda venda) {
+            if (id != venda.Id) {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
+            if (ModelState.IsValid) {
+                try {
                     _context.Update(venda);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!VendaExists(venda.Id))
-                    {
+                catch (DbUpdateConcurrencyException) {
+                    if (!VendaExists(venda.Id)) {
                         return NotFound();
                     }
-                    else
-                    {
+                    else {
                         throw;
                     }
                 }
@@ -124,17 +119,14 @@ namespace Projeto.Loja.Controllers
         }
 
         // GET: Vendas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Vendas == null)
-            {
+        public async Task<IActionResult> Delete(int? id) {
+            if (id == null || _context.Vendas == null) {
                 return NotFound();
             }
 
             var venda = await _context.Vendas
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (venda == null)
-            {
+            if (venda == null) {
                 return NotFound();
             }
 
@@ -144,15 +136,12 @@ namespace Projeto.Loja.Controllers
         // POST: Vendas/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Vendas == null)
-            {
+        public async Task<IActionResult> DeleteConfirmed(int id) {
+            if (_context.Vendas == null) {
                 return Problem("Entity set 'LojaDbContext.Vendas'  is null.");
             }
             var venda = await _context.Vendas.FindAsync(id);
-            if (venda != null)
-            {
+            if (venda != null) {
                 _context.Vendas.Remove(venda);
             }
 
@@ -160,8 +149,7 @@ namespace Projeto.Loja.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool VendaExists(int id)
-        {
+        private bool VendaExists(int id) {
             return _context.Vendas.Any(e => e.Id == id);
         }
     }

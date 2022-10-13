@@ -5,6 +5,7 @@ using Projeto.Loja.Entities;
 using Projeto.Loja.Models;
 using Projeto.Loja.Service.EstoqueService;
 using Projeto.Loja.Services.EstoqueService.Interfaces;
+using Projeto.Loja.Services.VendasService;
 using Projeto.Loja.Services.VendasService.Interfaces;
 using System.Security.Cryptography.X509Certificates;
 
