@@ -1,10 +1,10 @@
-﻿@model IEnumerable<TesteThomas2.Entities.Produto>
+﻿@model IEnumerable<TesteThomas2.Entities.Cliente>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Cliente</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -16,16 +16,13 @@
                 @Html.DisplayNameFor(model => model.Nome)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Descricao)
+                @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Categoria)
+                @Html.DisplayNameFor(model => model.Logotipo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Preco)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.QtdeEstoque)
+                @Html.DisplayNameFor(model => model.Logradouros)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Ativo)
@@ -42,21 +39,18 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Categoria)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Preco)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.QtdeEstoque)
-            </td>
+           <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Logotipo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Logradouros)
+            </th>
             <td>
                 @Html.DisplayFor(modelItem => item.Ativo)
             </td>

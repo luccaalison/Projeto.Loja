@@ -8,38 +8,38 @@ using Microsoft.EntityFrameworkCore;
 using TesteThomas2.Data;
 using TesteThomas2.Entities;
 using TesteThomas2.Models;
-using TesteThomas2.Services.ClienteService;
-using TesteThomas2.Services.ClienteService.Interfaces;
+using TesteThomas2.Services.LogradouroService;
+using TesteThomas2.Services.LogradouroService.Interfaces;
 
 
 namespace TesteThomas2.Controllers
 {
-    public class ClientesController : Controller
+    public class LogradourosController : Controller
     {
         private readonly LojaDbContext _context;
-        private readonly IClientesService _clienteService;
+        private readonly ILogradourosService _logradouroService;
 
-        public ClientesController(LojaDbContext context, IClientesService clientesService)
+        public LogradourosController(LojaDbContext context, ILogradourosService logradourosService)
         {
-            _clienteService = clientesService;
+            _logradouroService = logradourosService;
             _context = context;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Clientes.ToListAsync());
+            return View(await _context.Logradouros.ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)
         {
-            var cliente = await _context.Clientes
+            var endereco = await _context.Logradouros
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (cliente == null)
+            if (endereco == null)
             {
                 return NotFound();
             }
 
-            return View(cliente);
+            return View(endereco);
         }
 
         public IActionResult Create()
@@ -48,7 +48,7 @@ namespace TesteThomas2.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nome,Descricao,Categoria,Preco,QtdeEstoque")] ClienteCreateModel cliente)
+        public async Task<IActionResult> Create([Bind("Endereco,Cidade,Estado,CEP,ClienteId,cliente")] LogradouroDetailModel endereco)
         {
             return View();
         }
@@ -60,7 +60,7 @@ namespace TesteThomas2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Nome,Descricao,Categoria,Preco,QtdeEstoque,Id")] ClienteEditModel clienteEditar)
+        public async Task<IActionResult> Edit(int id, [Bind("Endereco,Cidade,Estado,CEP,ClienteId,cliente")] LogradouroEditModel enderecoEditar)
         {
             return View();
         }
@@ -79,7 +79,7 @@ namespace TesteThomas2.Controllers
 
         private bool Existe(int id)
         {
-            return _context.Clientes.Any(e => e.Id == id);
+            return _context.Logradouros.Any(e => e.Id == id);
         }
     }
 }

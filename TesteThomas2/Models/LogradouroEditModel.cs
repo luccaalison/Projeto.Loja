@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using TesteThomas2.Entities;
 
-namespace TesteThomas2.Entities
+namespace TesteThomas2.Models
 {
-    public class Logradouro : BaseAudityEntity
+    public class LogradouroEditModel
     {
-        [Key]
         public int Id { get; set; }
 
         public string Endereco { get; set; }
@@ -15,10 +14,9 @@ namespace TesteThomas2.Entities
 
         public string CEP { get; set; }
 
-        // Chave estrangeira referenciando o cliente a que pertence
         public int ClienteId { get; set; }
 
-        // Navegação para o cliente pai
         public Cliente cliente { get; set; }
     }
 }
+

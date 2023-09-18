@@ -1,11 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using TesteThomas2.Data;
 using TesteThomas2.Service.ClienteService;
-using TesteThomas2.Service.EstoqueService;
 using TesteThomas2.Services.ClienteService.Interfaces;
-using TesteThomas2.Services.EstoqueService.Interfaces;
-using TesteThomas2.Services.VendasService;
-using TesteThomas2.Services.VendasService.Interfaces;
+using TesteThomas2.Service.LogradouroService;
+using TesteThomas2.Services.LogradouroService.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,9 +21,8 @@ builder.Services.AddDbContext<LojaDbContext>(options =>
     b => b.MigrationsAssembly(typeof(LojaDbContext).Assembly.FullName)));
 
 // Injecao de Dependencia
-builder.Services.AddScoped<IProdutoService, ProdutoService>();
-builder.Services.AddScoped<IVendasService, VendasService>();
 builder.Services.AddScoped<IClientesService, ClientesService>();
+builder.Services.AddScoped<ILogradourosService, LogradourosService>();
 
 var app = builder.Build();
 
