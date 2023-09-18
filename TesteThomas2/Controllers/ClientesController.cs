@@ -48,33 +48,89 @@ namespace TesteThomas2.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nome,Descricao,Categoria,Preco,QtdeEstoque")] ClienteCreateModel cliente)
+        public async Task<IActionResult> Create([Bind("Nome,Email,Logotipo,Logradouros")] ClienteCreateModel cliente)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                var novoCliente = new Cliente
+                {
+                    Nome = cliente.Nome,
+                    Email = cliente.Email,
+                    Logotipo = cliente.Logotipo,
+                    Logradouros = (ICollection<Logradouro>)cliente.Logradouros.ToList()
+                };
+                _context.Add(novoCliente);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(cliente);
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
-            return View();
+            if(id == null || _context.Clientes == null)
+            {
+                return NotFound();
+            }
+
+            var cliente = await _context.Clientes.FindAsync(id);
+            if (cliente == null) {
+                return NotFound();
+            }
+            return View(cliente);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Nome,Descricao,Categoria,Preco,QtdeEstoque,Id")] ClienteEditModel clienteEditar)
+        public async Task<IActionResult> Edit(int id, [Bind("Nome,Email,Logotipo,Logradouros")] ClienteEditModel clienteEditar)
         {
-            return View();
+            var cliente = await _context.Clientes.FirstOrDefaultAsync(x => x.Id == clienteEditar.Id);
+            if (cliente == null)
+                throw new Exception("O cliente informado não foi encontrado.");
+
+
+            // atualizar
+            cliente.Nome = clienteEditar.Nome == cliente.Nome ? cliente.Nome : clienteEditar.Nome;
+            cliente.Email = clienteEditar.Email == cliente.Email ? cliente.Email : clienteEditar.Email;
+            cliente.Logotipo = clienteEditar.Logotipo == cliente.Logotipo ? cliente.Logotipo : clienteEditar.Logotipo;
+            cliente.Logradouros = clienteEditar.Logradouros == cliente.Logradouros ? cliente.Logradouros : clienteEditar.Logradouros;
+
+            _context.Clientes.Update(cliente);
+            await _context.SaveChangesAsync();
+            return View(cliente);
         }
 
         public async Task<IActionResult> Delete(int? id)
         {
-            return View();
+            if(id == null || _context.Clientes == null)
+            {
+                return NotFound();
+            }
+
+            var cliente = await _context.Clientes.FirstOrDefaultAsync(m => m.Id == id);
+            if(cliente == null)
+            {
+                return NotFound();
+            }
+            return View(cliente);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return View();
+            if(_context.Clientes == null)
+            {
+                return Problem("Entidade 'LojaDbContext.Clientes' é nulo");
+            }
+            var clientes = await _context.Clientes.FindAsync(id);
+            if (clientes != null)
+            {
+                _context.Clientes.Remove(clientes);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         private bool Existe(int id)

@@ -32,7 +32,9 @@
                     <option value="">Selecione um logradouro</option>
                 </select>
                 <span asp-validation-for="Logradouros" class="text-danger"></span>
+                <a asp-action="Create" asp-controller="Enderecos" class="btn btn-primary">Criar Endereço</a>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
