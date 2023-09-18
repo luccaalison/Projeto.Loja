@@ -56,8 +56,7 @@ namespace TesteThomas2.Controllers
                 {
                     Nome = cliente.Nome,
                     Email = cliente.Email,
-                    Logotipo = cliente.Logotipo,
-                    Logradouros = (ICollection<Logradouro>)cliente.Logradouros.ToList()
+                    Logotipo = cliente.Logotipo ?? null
                 };
                 _context.Add(novoCliente);
                 await _context.SaveChangesAsync();

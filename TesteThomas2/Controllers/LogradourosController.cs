@@ -47,31 +47,47 @@ namespace TesteThomas2.Controllers
             return View(endereco);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var clientes = await _context.Clientes.ToListAsync();
+            ViewBag.Clientes = clientes.Select(x => new SelectListItem() { 
+            Text = x.Nome,
+            Value = x.Id.ToString()
+            }).ToList();
+
+
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Endereco,Cidade,Estado,CEP,ClienteId,cliente")] LogradouroDetailModel endereco)
+        public async Task<IActionResult> Create([Bind("Endereco,Cidade,Estado,CEP,ClienteId")] LogradouroDetailModel req)
         {
+
 
             if (ModelState.IsValid)
             {
                 var novoEndereco = new Logradouro
                 {
-                    Endereco = endereco.Endereco,
-                    cliente = endereco.Cliente,
-                    CEP = endereco.CEP,
-                    Cidade = endereco.Cidade,
-                    ClienteId = endereco.ClienteId,
-                    Estado = endereco.Estado
+                    Endereco = req.Endereco,
+                    CEP = req.CEP,
+                    Cidade = req.Cidade,
+                    ClienteId = req.ClienteId,
+                    Estado = req.Estado
                 };
                 _context.Add(novoEndereco);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(endereco);
+
+            var clientes = await _context.Clientes.ToListAsync();
+            ViewBag.Clientes = clientes.Select(x => new SelectListItem()
+            {
+                Text = x.Nome,
+                Value = x.Id.ToString()
+            }).ToList();
+
+
+            return View(req);
         }
 
         public async Task<IActionResult> Edit(int? id)

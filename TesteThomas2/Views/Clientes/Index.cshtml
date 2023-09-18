@@ -40,29 +40,30 @@
 @foreach (var item in Model) {
         <tr>
            <th>
-                @Html.DisplayNameFor(model => model.Nome)
+                    @item.Nome
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
+                    @item.Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Logotipo)
+                    @item.Logotipo
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Logradouros)
+                    @item.Logradouros
+                  
             </th>
             <td>
-                @Html.DisplayFor(modelItem => item.Ativo)
+                    @Html.DisplayFor(modelItem => item.Ativo)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DataCriacao)
+                    @Html.DisplayFor(modelItem => item.DataCriacao)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DataAtualizacao)
+                    @Html.DisplayFor(modelItem => item.DataAtualizacao)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>

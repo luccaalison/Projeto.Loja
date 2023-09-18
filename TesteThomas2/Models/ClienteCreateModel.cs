@@ -13,6 +13,6 @@ namespace TesteThomas2.Models
         [EmailAddress(ErrorMessage = "Por favor, informe um endereço de e-mail válido.")]
         public string Email { get; set; }
 
-        public List<LogradouroDetailModel> Logradouros { get; set; }
+        public List<LogradouroDetailModel>? Logradouros { get; set; }
     }
 }

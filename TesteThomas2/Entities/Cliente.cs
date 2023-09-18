@@ -20,6 +20,6 @@ namespace TesteThomas2.Entities
         public byte[]? Logotipo { get; set; }
 
         // Relacionamento com Logradouros (um cliente pode ter vários logradouros)
-        public ICollection<Logradouro> Logradouros { get; set; }
+        public ICollection<Logradouro>? Logradouros { get; set; }
     }
 }
